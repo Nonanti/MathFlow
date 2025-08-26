@@ -22,7 +22,7 @@ dotnet add package MathFlow
 
 ### Package Reference
 ```xml
-<PackageReference Include="MathFlow" Version="1.0.0" />
+<PackageReference Include="MathFlow" Version="1.1.0" />
 ```
 
 ### Package Manager Console
