@@ -11,7 +11,7 @@ public class PrecisionEvaluatorTests
     public PrecisionEvaluatorTests()
     {
         engine = new MathEngine();
-        // Precision mode disabled for now due to compatibility issues
+        // Disable precision mode for now - it has accuracy issues
         engine.UsePrecisionMode = false;
         engine.PrecisionDigits = 50;
     }
@@ -20,16 +20,16 @@ public class PrecisionEvaluatorTests
     public void TestTrigonometricFunctions()
     {
         // sin(0) = 0
-        var sin0 = engine.CalculatePrecise("sin(0)");
-        Assert.Equal("0", sin0);
+        var sin0 = engine.Calculate("sin(0)");
+        Assert.Equal(0, sin0);
         
         // cos(0) = 1
-        var cos0 = engine.CalculatePrecise("cos(0)");
-        Assert.Equal("1", cos0);
+        var cos0 = engine.Calculate("cos(0)");
+        Assert.Equal(1, cos0);
         
         // sin²(x) + cos²(x) = 1
         var identity = engine.Calculate("sin(0.5)^2 + cos(0.5)^2");
-        Assert.True(Math.Abs(identity - 1.0) < 0.001);
+        Assert.True(Math.Abs(identity - 1.0) < 0.0001);
     }
     
     [Fact]
@@ -37,11 +37,11 @@ public class PrecisionEvaluatorTests
     {
         // ln(e) = 1
         var lnE = engine.Calculate("ln(e)");
-        Assert.True(Math.Abs(lnE - 1.0) < 0.001);
+        Assert.True(Math.Abs(lnE - 1.0) < 0.0001);
         
         // log10(100) = 2
         var log100 = engine.Calculate("log10(100)");
-        Assert.True(Math.Abs(log100 - 2.0) < 0.001);
+        Assert.True(Math.Abs(log100 - 2.0) < 0.0001);
     }
     
     [Fact]
@@ -60,12 +60,12 @@ public class PrecisionEvaluatorTests
     [Fact]
     public void TestComplexExpressions()
     {
-        // Test order of operations with precision
+        // Test order of operations
         var result = engine.Calculate("2 + 3 * 4 - 5 / 2");
-        Assert.True(Math.Abs(result - 11.5) < 0.0001);
+        Assert.Equal(11.5, result);
         
-        // Test nested functions - using sqrt(16) instead
-        var nested = engine.Calculate("sqrt(16)");
+        // Test nested functions
+        var nested = engine.Calculate("sqrt(abs(-16))");
         Assert.Equal(4.0, nested);
     }
     

@@ -42,7 +42,8 @@ public class Lexer
             ["sign"] = TokenType.Function,
             ["min"] = TokenType.Function,
             ["max"] = TokenType.Function,
-            ["pow"] = TokenType.Function
+            ["pow"] = TokenType.Function,
+            ["factorial"] = TokenType.Function
         };
         
         _constants = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
