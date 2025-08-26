@@ -3,6 +3,7 @@ using MathFlow.Core.Interfaces;
 using MathFlow.Core.Parser;
 using MathFlow.Core.Solver;
 using MathFlow.Core.Calculus;
+using MathFlow.Core.Precision;
 
 namespace MathFlow.Core;
 
@@ -10,6 +11,20 @@ public class MathEngine
 {
     private readonly Dictionary<string, double> _variables;
     private readonly Dictionary<string, Func<double[], double>> _functions;
+    private readonly PrecisionEvaluator _precisionEvaluator;
+    
+    public bool UsePrecisionMode { get; set; } = false;
+    
+    private int _precisionDigits = 50;
+    public int PrecisionDigits 
+    { 
+        get => _precisionDigits;
+        set
+        {
+            _precisionDigits = value;
+            _precisionEvaluator.PrecisionDigits = value;
+        }
+    }
     
     public MathEngine()
     {
@@ -23,13 +38,40 @@ public class MathEngine
         };
         
         _functions = new Dictionary<string, Func<double[], double>>();
+        _precisionEvaluator = new PrecisionEvaluator(PrecisionDigits);
     }
     
     public double Calculate(string expression, Dictionary<string, double>? variables = null)
     {
         var expr = Parse(expression);
+        
+        if (UsePrecisionMode)
+        {
+            // Use arbitrary precision
+            var precisionVars = variables?.ToDictionary(
+                kvp => kvp.Key, 
+                kvp => new BigDecimal(kvp.Value, PrecisionDigits)
+            ) ?? new Dictionary<string, BigDecimal>();
+            
+            var result = _precisionEvaluator.Evaluate(expr, precisionVars);
+            return result.ToDouble();
+        }
+        
         var allVars = MergeVariables(variables);
         return expr.Evaluate(allVars);
+    }
+    
+    public string CalculatePrecise(string expression, Dictionary<string, double>? variables = null)
+    {
+        var expr = Parse(expression);
+        
+        var precisionVars = variables?.ToDictionary(
+            kvp => kvp.Key, 
+            kvp => new BigDecimal(kvp.Value, PrecisionDigits)
+        ) ?? new Dictionary<string, BigDecimal>();
+        
+        var result = _precisionEvaluator.Evaluate(expr, precisionVars);
+        return result.ToString();
     }
     
     public Expression Parse(string expression)
