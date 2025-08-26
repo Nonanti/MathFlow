@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>MathFlow</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>MathFlow Contributors</Authors>
+    <Description>A powerful and intuitive mathematical expression library for C# with symbolic computation</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/yourusername/MathFlow</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourusername/MathFlow</RepositoryUrl>
+    <PackageTags>math;expression;parser;symbolic;calculus;algebra;mathflow</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>
