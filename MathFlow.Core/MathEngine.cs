@@ -50,7 +50,7 @@ public class MathEngine
             // Use arbitrary precision
             var precisionVars = variables?.ToDictionary(
                 kvp => kvp.Key, 
-                kvp => new BigDecimal(kvp.Value, PrecisionDigits)
+                kvp => new BigDecimal(kvp.Value)
             ) ?? new Dictionary<string, BigDecimal>();
             
             var result = _precisionEvaluator.Evaluate(expr, precisionVars);

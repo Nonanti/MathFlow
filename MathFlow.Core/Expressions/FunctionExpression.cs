@@ -26,6 +26,7 @@ public class FunctionExpression : Expression
             "mod" when argValues.Length == 2 => argValues[0] % argValues[1],
             "gcd" when argValues.Length == 2 => GCD((long)argValues[0], (long)argValues[1]),
             "lcm" when argValues.Length == 2 => LCM((long)argValues[0], (long)argValues[1]),
+            "factorial" when argValues.Length == 1 => Factorial(argValues[0]),
             _ => throw new NotSupportedException($"Function '{Name}' is not supported")
         };
     }
@@ -48,6 +49,21 @@ public class FunctionExpression : Expression
     private static long LCM(long a, long b)
     {
         return Math.Abs(a * b) / GCD(a, b);
+    }
+    
+    private static double Factorial(double n)
+    {
+        if (n < 0 || n != Math.Floor(n))
+            throw new ArgumentException("Factorial is only defined for non-negative integers");
+        
+        if (n > 170)
+            return double.PositiveInfinity;
+        
+        double result = 1;
+        for (int i = 2; i <= (int)n; i++)
+            result *= i;
+        
+        return result;
     }
     
     public override IExpression Simplify()
