@@ -141,7 +141,7 @@ Main methods:
 
 ## Requirements
 
-.NET 9.0 or later
+.NET 8.0 or later
 
 ## Tests
 
