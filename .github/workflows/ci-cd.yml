@@ -1,0 +1,134 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ master, main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  CONFIGURATION: Release
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration ${{ env.CONFIGURATION }}
+    
+    - name: Test
+      run: dotnet test --no-build --configuration ${{ env.CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" --logger:trx
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          **/*.trx
+          **/coverage.cobertura.xml
+    
+    - name: Pack
+      if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+      run: dotnet pack MathFlow.Core/MathFlow.Core.csproj --no-build --configuration ${{ env.CONFIGURATION }} --output nupkgs
+    
+    - name: Upload NuGet package
+      if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-package
+        path: nupkgs/*.nupkg
+
+  publish-nuget:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Download NuGet package
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-package
+        path: nupkgs
+    
+    - name: Publish to NuGet.org
+      run: |
+        for package in nupkgs/*.nupkg; do
+          dotnet nuget push "$package" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        done
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+  create-release:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    
+    permissions:
+      contents: write
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download NuGet package
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-package
+        path: nupkgs
+    
+    - name: Extract version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release v${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## MathFlow v${{ steps.get_version.outputs.VERSION }}
+          
+          ### Installation
+          ```bash
+          dotnet add package MathFlow --version ${{ steps.get_version.outputs.VERSION }}
+          ```
+          
+          ### Changes
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md) for details.
+          
+          ### NuGet Package
+          https://www.nuget.org/packages/MathFlow/${{ steps.get_version.outputs.VERSION }}
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./nupkgs/MathFlow.${{ steps.get_version.outputs.VERSION }}.nupkg
+        asset_name: MathFlow.${{ steps.get_version.outputs.VERSION }}.nupkg
+        asset_content_type: application/zip
