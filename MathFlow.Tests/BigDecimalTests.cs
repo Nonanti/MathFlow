@@ -20,7 +20,6 @@ public class BigDecimalTests
     [Fact]
     public void TestPrecisionWithLargeNumbers()
     {
-        // This was the original bug
         var hundred = new BigDecimal(100);
         var bigNum = BigDecimal.Pow(hundred, 100);
         var result = bigNum + BigDecimal.One - bigNum;
@@ -35,7 +34,6 @@ public class BigDecimalTests
         var three = new BigDecimal(3);
         var result = one / three;
         
-        // Should be 0.333333...
         var str = result.ToString();
         Assert.StartsWith("0.3333333", str);
     }
@@ -118,13 +116,13 @@ public class BigDecimalTests
     [Fact]
     public void TestStringRepresentation()
     {
-        var a = new BigDecimal(new System.Numerics.BigInteger(123456), 3); // 123.456
+        var a = new BigDecimal(new System.Numerics.BigInteger(123456), 3);
         Assert.Equal("123.456", a.ToString());
         
-        var b = new BigDecimal(new System.Numerics.BigInteger(100), 2); // 1.00
-        Assert.Equal("1", b.ToString()); // trailing zeros removed
+        var b = new BigDecimal(new System.Numerics.BigInteger(100), 2);
+        Assert.Equal("1", b.ToString());
         
-        var c = new BigDecimal(new System.Numerics.BigInteger(5), 4); // 0.0005
+        var c = new BigDecimal(new System.Numerics.BigInteger(5), 4);
         Assert.Equal("0.0005", c.ToString());
     }
 }

@@ -1,7 +1,5 @@
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core.Expressions;
-
 public abstract class Expression : IExpression
 {
     public abstract double Evaluate(Dictionary<string, double>? variables = null);

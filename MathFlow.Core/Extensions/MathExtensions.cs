@@ -1,15 +1,11 @@
 using MathFlow.Core.Expressions;
-
 namespace MathFlow.Core.Extensions;
-
-// math helper extensions
 public static class MathExtensions
 {
     public static double ToRadians(this double degrees) {
         return degrees * Math.PI / 180.0;
     }
     
-    // rad -> deg
     public static double ToDegrees(this double radians) {
         return radians * 180.0 / Math.PI;
     }

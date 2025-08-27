@@ -1,8 +1,6 @@
 using System;
 using System.Numerics;
-
 namespace MathFlow.Core.Precision;
-
 /// <summary>
 /// Provides mathematical functions with arbitrary precision arithmetic
 /// </summary>
@@ -21,7 +19,7 @@ public static class ArbitraryPrecisionMath
     
     public static BigDecimal E(int precision = 100)
     {
-        // TODO: maybe cache more values?
+        // TODO: cache more pi values for performance
         if (precision <= 500)
             return TruncateToPrecision(ECache, precision);
         return ComputeE(precision);
@@ -111,7 +109,7 @@ public static class ArbitraryPrecisionMath
             if (sum == newSum) break;
             sum = newSum;
             
-            // FIXME: this could be optimized
+            // FIXME: optimize this loop later
             term = -term * x2 / new BigDecimal((n + 1) * (n + 2));
         }
         
@@ -247,7 +245,6 @@ public static class ArbitraryPrecisionMath
     
     /// <summary>
     /// Natural logarithm implementation
-    /// TODO: optimize for large numbers  
     /// </summary>
     public static BigDecimal Ln(BigDecimal x, int precision = 100)
     {

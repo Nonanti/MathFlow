@@ -1,5 +1,4 @@
 namespace MathFlow.Core.Expressions;
-
 public enum BinaryOperator
 {
     Add,

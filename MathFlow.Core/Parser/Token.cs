@@ -1,5 +1,4 @@
 namespace MathFlow.Core.Parser;
-
 public enum TokenType
 {
     Number,
@@ -18,7 +17,6 @@ public enum TokenType
     Factorial,
     End
 }
-
 public class Token
 {
     public TokenType Type { get; }

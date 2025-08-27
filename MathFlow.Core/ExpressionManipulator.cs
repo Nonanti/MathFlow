@@ -1,8 +1,6 @@
 using MathFlow.Core.Expressions;
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core;
-
 public static class ExpressionManipulator
 {
     public static Expression Expand(Expression expression)

@@ -1,8 +1,6 @@
 using MathFlow.Core.Expressions;
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core;
-
 public static class LatexConverter
 {
     public static string ToLatex(IExpression expression)

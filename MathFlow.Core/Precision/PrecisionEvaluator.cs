@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MathFlow.Core.Expressions;
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core.Precision;
-
 /// <summary>
 /// Evaluates mathematical expressions with precision mode
 /// </summary>
@@ -47,7 +45,6 @@ public class PrecisionEvaluator
             ["ceil"] = args => ArbitraryPrecisionMath.Ceiling(args[0]), // alias
             ["round"] = args => ArbitraryPrecisionMath.Round(args[0]),
             ["sign"] = args => ArbitraryPrecisionMath.Sign(args[0]),
-            // TODO: optimize min/max for more than 2 args
             ["min"] = args => args.Length == 2 ? (args[0] < args[1] ? args[0] : args[1]) : args.Min(),
             ["max"] = args => args.Length == 2 ? (args[0] > args[1] ? args[0] : args[1]) : args.Max(),
             ["pow"] = args => ArbitraryPrecisionMath.Pow(args[0], args[1], precisionDigits),

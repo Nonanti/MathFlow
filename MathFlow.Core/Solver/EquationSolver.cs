@@ -1,8 +1,6 @@
 using MathFlow.Core.Interfaces;
 using MathFlow.Core.Expressions;
-
 namespace MathFlow.Core.Solver;
-
 public static class EquationSolver
 {
     public static double FindRoot(IExpression expression, double initialGuess, double tolerance = 1e-10, int maxIterations = 100)
@@ -10,57 +8,56 @@ public static class EquationSolver
         return NewtonRaphson(expression, initialGuess, tolerance, maxIterations);
     }
     
-    public static double NewtonRaphson(IExpression expression, double x0, double tolerance = 1e-10, int maxIterations = 100)
+    public static double NewtonRaphson(IExpression expression, double x0, double tolerance = 1e-10, int maxIter = 100)
     {
-        var variable = expression.GetVariables().FirstOrDefault();
-        if (variable == null)
+        var var_name = expression.GetVariables().FirstOrDefault();
+        if (var_name == null)
         {
-            variable = "x";
+            var_name = "x";
         }
         
-        IExpression derivative;
+        IExpression deriv;
         try
         {
-            derivative = expression.Differentiate(variable);
+            deriv = expression.Differentiate(var_name);
         }
         catch
         {
-            // numerical deriv (slower)
             var h = 1e-8;
-            var vars1 = new Dictionary<string, double> { [variable] = x0 - h };
-            var vars2 = new Dictionary<string, double> { [variable] = x0 + h };
-            var f1 = expression.Evaluate(vars1);
-            var f2 = expression.Evaluate(vars2);
-            var numericDerivative = (f2 - f1) / (2 * h);
-            derivative = new ConstantExpression(numericDerivative);
+            var v1 = new Dictionary<string, double> { [var_name] = x0 - h };
+            var v2 = new Dictionary<string, double> { [var_name] = x0 + h };
+            var f1 = expression.Evaluate(v1);
+            var f2 = expression.Evaluate(v2);
+            var numDeriv = (f2 - f1) / (2 * h);
+            deriv = new ConstantExpression(numDeriv);
         }
         
-        var variables = new Dictionary<string, double>();
+        var vars = new Dictionary<string, double>();
         
         var x = x0;
         
-        for (int i = 0; i < maxIterations; i++)
+        for (int i = 0; i < maxIter; i++)
         {
-            variables[variable] = x;
-            var fx = expression.Evaluate(variables);
+            vars[var_name] = x;
+            var fx = expression.Evaluate(vars);
             
             if (Math.Abs(fx) < tolerance)
                 return x;
             
-            var fpx = derivative.Evaluate(variables);
+            var fpx = deriv.Evaluate(vars);
             
             if (Math.Abs(fpx) < tolerance)
                 throw new InvalidOperationException("Derivative is zero. Newton-Raphson method fails.");
             
-            var xNext = x - fx / fpx;
+            var next_x = x - fx / fpx;
             
-            if (Math.Abs(xNext - x) < tolerance)
-                return xNext;
+            if (Math.Abs(next_x - x) < tolerance)
+                return next_x;
             
-            x = xNext;
+            x = next_x;
         }
         
-        throw new InvalidOperationException($"Newton-Raphson method did not converge within {maxIterations} iterations.");
+        throw new InvalidOperationException($"Newton-Raphson method did not converge within {maxIter} iterations.");
     }
     
     public static double Bisection(IExpression expression, double a, double b, double tolerance = 1e-10, int maxIterations = 100)
@@ -163,7 +160,6 @@ public static class EquationSolver
                 }
                 catch
                 {
-                    // continue searching
                 }
             }
             

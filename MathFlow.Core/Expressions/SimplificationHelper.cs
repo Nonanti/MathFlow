@@ -1,7 +1,5 @@
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core.Expressions;
-
 public static class SimplificationHelper
 {
     public static IExpression SimplifyAddition(IExpression left, IExpression right)

@@ -12,19 +12,36 @@ class Program
     {
         Console.WriteLine("=== MathFlow Examples ===\n");
         
-        // Basic expression evaluation
+        if (args.Length > 0)
+        {
+            switch (args[0].ToLower())
+            {
+                case "plotting":
+                    PlottingDemo.Run();
+                    return;
+                case "ode":
+                case "odedemo":
+                    ODEDemo.Run();
+                    return;
+                case "integration":
+                case "test":
+                    TestIntegration.RunTest();
+                    return;
+                case "critical":
+                case "features":
+                    CriticalFeaturesDemo.Run();
+                    return;
+            }
+        }
+        
         BasicExamples();
         
-        // Symbolic mathematics
         SymbolicMathExamples();
         
-        // Complex numbers
         ComplexNumberExamples();
         
-        // Vector operations
         VectorExamples();
         
-        // Statistical calculations
         StatisticsExamples();
     }
     
@@ -37,7 +54,6 @@ class Program
         Console.WriteLine($"sin(pi/2) = {engine.Calculate("sin(pi/2)")}");
         Console.WriteLine($"sqrt(16) + log10(100) = {engine.Calculate("sqrt(16) + log10(100)")}");
         
-        // With variables
         var vars = new Dictionary<string, double> { ["x"] = 3, ["y"] = 4 };
         Console.WriteLine($"x^2 + y^2 where x=3, y=4 = {engine.Calculate("x^2 + y^2", vars)}");
         Console.WriteLine();
@@ -48,19 +64,15 @@ class Program
         Console.WriteLine("## Symbolic Mathematics");
         var engine = new MathEngine();
         
-        // Differentiation
         var derivative = engine.Differentiate("x^3 - 2*x^2 + x - 1", "x");
         Console.WriteLine($"d/dx(x^3 - 2x^2 + x - 1) = {derivative}");
         
-        // Simplification
         var simplified = engine.Simplify("2*x + 3*x - x");
         Console.WriteLine($"Simplify: 2x + 3x - x = {simplified}");
         
-        // Integration
         var integral = engine.Integrate("x^2", "x", 0, 1);
         Console.WriteLine($"∫[0,1] x^2 dx = {integral:F6}");
         
-        // Root finding
         var root = engine.FindRoot("x^2 - 2", 1);
         Console.WriteLine($"Root of x^2 - 2 = {root:F6} (√2)");
         Console.WriteLine();

@@ -1,9 +1,7 @@
 using System;
 using System.Numerics;
 using System.Globalization;
-
 namespace MathFlow.Core.Precision;
-
 /// <summary>
 /// Arbitrary precision decimal implementation
 /// </summary>

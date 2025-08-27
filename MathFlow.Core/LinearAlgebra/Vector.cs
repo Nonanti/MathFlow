@@ -1,5 +1,4 @@
 namespace MathFlow.Core.LinearAlgebra;
-
 /// <summary>
 /// Represents a mathematical vector
 /// </summary>

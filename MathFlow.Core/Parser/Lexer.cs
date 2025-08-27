@@ -1,8 +1,6 @@
 using System.Globalization;
 using System.Text;
-
 namespace MathFlow.Core.Parser;
-
 public class Lexer
 {
     private readonly string _input;
@@ -48,7 +46,7 @@ public class Lexer
         
         _constants = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "pi", "π", "e", "tau", "τ", "phi", "φ"
+            "pi", "π", "e", "tau", "τ", "phi", "φ", "i"
         };
     }
     
@@ -195,7 +193,6 @@ public class Lexer
         }
     }
 }
-
 public class LexerException : Exception
 {
     public LexerException(string message) : base(message) { }

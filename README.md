@@ -22,7 +22,7 @@ dotnet add package MathFlow
 
 ### Package Reference
 ```xml
-<PackageReference Include="MathFlow" Version="1.1.0" />
+<PackageReference Include="MathFlow" Version="2.0.0" />
 ```
 
 ### Package Manager Console
@@ -46,15 +46,28 @@ var vars = new Dictionary<string, double> { ["x"] = 3, ["y"] = 4 };
 var answer = engine.Calculate("x^2 + y^2", vars); // 25
 ```
 
+## What's New in v2.0.0
+
+### Major Features Added
+- **Complex Number Support**: Full integration with expression parser
+- **Enhanced Polynomial Factoring**: Quadratic, cubic, and special forms  
+- **New ODE Solvers**: RungeKutta2 and Adams-Bashforth methods
+- **Rational Function Integration**: Partial fractions and special forms
+- **Symbolic Integration**: Extended support for trigonometric and exponential functions
+
 ## Features
 
 ### Core Capabilities
 - Parse mathematical expressions from strings
 - Evaluate with variables and custom functions
 - Works with standard math notation
-- Symbolic differentiation
-- Expression simplification
+- Symbolic differentiation and integration
+- Expression simplification and factoring
 - Numerical integration & equation solving
+- ASCII plotting for function visualization
+- Matrix operations & linear algebra
+- Arbitrary precision arithmetic
+- Complex number arithmetic
 
 ### Supported Operations
 
@@ -99,6 +112,37 @@ double[] roots = engine.FindRoots("x^3 - 6*x^2 + 11*x - 6", 0, 4);
 ```csharp
 double integral = engine.Integrate("x^2", "x", 0, 1); 
 // returns ~0.333333
+```
+
+### Function Plotting (ASCII)
+
+Display mathematical functions directly in terminal:
+
+```csharp
+// Simple plot
+var plot = engine.Plot("sin(x)", -Math.PI, Math.PI);
+Console.WriteLine(plot.ToAsciiChart(60, 20));
+
+// Multiple functions
+var multiPlot = engine.CreatePlotter()
+    .AddFunction("sin(x)", -Math.PI, Math.PI, label: "sin")
+    .AddFunction("cos(x)", -Math.PI, Math.PI, label: "cos");
+Console.WriteLine(multiPlot.ToAsciiChart(60, 20));
+```
+
+Output:
+```
+    1.0 ┤      ●●●●●                
+        │    ●●    ●●              
+        │  ●●        ●●            
+        │ ●●          ●●           
+    0.0 ┤●●────────────●●──────────
+        │              ●●         ●
+        │               ●●      ●● 
+        │                ●●●●●●●   
+   -1.0 ┤                          
+        └──────────────────────────
+         -3.14      0.00      3.14
 ```
 
 ## Working with Expressions

@@ -1,7 +1,5 @@
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core.Expressions;
-
 public class UnaryExpression : Expression
 {
     public UnaryOperator Operator { get; }

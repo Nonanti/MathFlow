@@ -1,7 +1,5 @@
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core.Expressions;
-
 public class BinaryExpression : Expression
 {
     public IExpression Left { get; }
@@ -20,17 +18,18 @@ public class BinaryExpression : Expression
         var leftValue = Left.Evaluate(variables);
         var rightValue = Right.Evaluate(variables);
         
-        return Operator switch
+        switch (Operator)
         {
-            BinaryOperator.Add => leftValue + rightValue,
-            BinaryOperator.Subtract => leftValue - rightValue,
-            BinaryOperator.Multiply => leftValue * rightValue,
-            BinaryOperator.Divide => leftValue / rightValue,
-            BinaryOperator.Power => Math.Pow(leftValue, rightValue),
-            BinaryOperator.Modulo => leftValue % rightValue,
-            BinaryOperator.LogBase => Math.Log(leftValue, rightValue),
-            _ => throw new NotSupportedException($"Operator {Operator} is not supported")
-        };
+            case BinaryOperator.Add: return leftValue + rightValue;
+            case BinaryOperator.Subtract: return leftValue - rightValue;
+            case BinaryOperator.Multiply: return leftValue * rightValue;
+            case BinaryOperator.Divide: return leftValue / rightValue;
+            case BinaryOperator.Power: return Math.Pow(leftValue, rightValue);
+            case BinaryOperator.Modulo: return leftValue % rightValue;
+            case BinaryOperator.LogBase: return Math.Log(leftValue, rightValue);
+            default:
+                throw new NotSupportedException($"Operator {Operator} is not supported");
+        }
     }
     
     public override IExpression Simplify()
@@ -46,7 +45,6 @@ public class BinaryExpression : Expression
             }
             catch
             {
-                // constants might contain undefined variables
             }
         }
         
@@ -203,12 +201,11 @@ public class BinaryExpression : Expression
     
     private static bool IsZero(IExpression expr)
     {
-        // checking if close enough to 0
         return expr is ConstantExpression c && Math.Abs(c.Value) < 1e-10;
     }
     
     private static bool IsOne(IExpression expr)
     {
-        return expr is ConstantExpression c && Math.Abs(c.Value - 1) < 1e-10;  //approx 1
+        return expr is ConstantExpression c && Math.Abs(c.Value - 1) < 1e-10;
     }
 }

@@ -1,5 +1,4 @@
 namespace MathFlow.Core.ComplexMath;
-
 public struct ComplexNumber  // a + bi format
 {
     public double Real { get; }

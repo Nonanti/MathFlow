@@ -1,9 +1,7 @@
 using System.Xml.Linq;
 using MathFlow.Core.Expressions;
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core;
-
 public static class MathMLConverter
 {
     private static readonly XNamespace MathMLNamespace = "http://www.w3.org/1998/Math/MathML";

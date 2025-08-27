@@ -4,9 +4,11 @@ using MathFlow.Core.Parser;
 using MathFlow.Core.Solver;
 using MathFlow.Core.Calculus;
 using MathFlow.Core.Precision;
-
+using MathFlow.Core.LinearAlgebra;
+using MathFlow.Core.Plotting;
+using MathFlow.Core.DifferentialEquations;
+using MathFlow.Core.ComplexMath;
 namespace MathFlow.Core;
-
 public class MathEngine
 {
     private readonly Dictionary<string, double> _variables;
@@ -32,9 +34,8 @@ public class MathEngine
         {
             ["pi"] = Math.PI,
             ["e"] = Math.E,
-            // tau is 2*pi, some people prefer it
             ["tau"] = 2 * Math.PI,
-            ["phi"] = (1 + Math.Sqrt(5)) / 2  // golden ratio
+            ["phi"] = (1 + Math.Sqrt(5)) / 2
         };
         
         _functions = new Dictionary<string, Func<double[], double>>();
@@ -47,7 +48,6 @@ public class MathEngine
         
         if (UsePrecisionMode)
         {
-            // Use arbitrary precision
             var precisionVars = variables?.ToDictionary(
                 kvp => kvp.Key, 
                 kvp => new BigDecimal(kvp.Value)
@@ -82,7 +82,7 @@ public class MathEngine
     
     public Expression Build(string expression)
     {
-        return Parse(expression);  // kept for backward compat
+        return Parse(expression);
     }
     
     public double Evaluate(Expression expression, Dictionary<string, double>? variables = null)
@@ -107,6 +107,24 @@ public class MathEngine
     {
         var expr = Parse(expression);
         return NumericalIntegration.Integrate(expr, variable, lowerBound, upperBound, steps);
+    }
+    
+    /// <summary>
+    /// Performs symbolic integration (indefinite integral)
+    /// </summary>
+    public Expression IntegrateSymbolic(string expression, string variable)
+    {
+        var expr = Parse(expression);
+        var result = SymbolicIntegration.Integrate(expr, variable);
+        return (Expression)result;
+    }
+    
+    /// <summary>
+    /// Alias for symbolic integration
+    /// </summary>
+    public Expression Antiderivative(string expression, string variable)
+    {
+        return IntegrateSymbolic(expression, variable);
     }
     
     public double FindRoot(string equation, double initialGuess, double tolerance = 1e-10, int maxIterations = 100)
@@ -134,9 +152,36 @@ public class MathEngine
         return ExpressionManipulator.Expand(expr);
     }
     
-    public Expression Factor(string expression)
+    public Expression Factor(string expression, string? variable = null)
     {
         var expr = Parse(expression);
+        
+        // If no variable specified, try to detect the main variable
+        if (string.IsNullOrEmpty(variable))
+        {
+            var vars = expr.GetVariables();
+            if (vars.Count == 1)
+            {
+                variable = vars.First();
+            }
+            else if (vars.Count > 1)
+            {
+                // Try common variable names
+                if (vars.Contains("x")) variable = "x";
+                else if (vars.Contains("y")) variable = "y";
+                else if (vars.Contains("z")) variable = "z";
+                else variable = vars.First();
+            }
+        }
+        
+        // Use the new polynomial factoring if we have a variable
+        if (!string.IsNullOrEmpty(variable))
+        {
+            var factored = PolynomialFactoring.Factor(expr, variable);
+            return (Expression)factored;
+        }
+        
+        // Fall back to the old simple factoring
         return ExpressionManipulator.Factor(expr);
     }
     
@@ -199,6 +244,178 @@ public class MathEngine
         var expr = Parse(expression);
         return MathMLConverter.ToMathML(expr);
     }
+    
+    #region Matrix Operations
+    
+    /// <summary>
+    /// Parse a matrix from string notation like "[[1,2],[3,4]]"
+    /// </summary>
+    public Matrix ParseMatrix(string matrixString)
+    {
+        return Matrix.Parse(matrixString);
+    }
+    
+    /// <summary>
+    /// Calculate determinant of a matrix
+    /// </summary>
+    public double Determinant(string matrixString)
+    {
+        var matrix = Matrix.Parse(matrixString);
+        return matrix.Determinant();
+    }
+    
+    /// <summary>
+    /// Calculate inverse of a matrix
+    /// </summary>
+    public Matrix Inverse(string matrixString)
+    {
+        var matrix = Matrix.Parse(matrixString);
+        return matrix.Inverse();
+    }
+    
+    /// <summary>
+    /// Calculate eigenvalues and eigenvectors
+    /// </summary>
+    public MatrixOperations.EigenResult Eigen(string matrixString)
+    {
+        var matrix = Matrix.Parse(matrixString);
+        return MatrixOperations.Eigen(matrix);
+    }
+    
+    /// <summary>
+    /// Solve linear system Ax = b
+    /// </summary>
+    public double[] SolveLinearSystem(string matrixA, double[] vectorB)
+    {
+        var A = Matrix.Parse(matrixA);
+        return MatrixOperations.Solve(A, vectorB);
+    }
+    
+    /// <summary>
+    /// Calculate matrix rank
+    /// </summary>
+    public int MatrixRank(string matrixString)
+    {
+        var matrix = Matrix.Parse(matrixString);
+        return MatrixOperations.Rank(matrix);
+    }
+    
+    /// <summary>
+    /// Calculate matrix trace
+    /// </summary>
+    public double MatrixTrace(string matrixString)
+    {
+        var matrix = Matrix.Parse(matrixString);
+        return MatrixOperations.Trace(matrix);
+    }
+    
+    #endregion
+    
+    #region Plotting
+    
+    /// <summary>
+    /// Plot a mathematical expression
+    /// </summary>
+    public Plotter Plot(string expression, double minX, double maxX, PlotConfig? config = null)
+    {
+        var plotter = new Plotter(config);
+        return plotter.AddFunction(expression, minX, maxX);
+    }
+    
+    /// <summary>
+    /// Plot multiple expressions
+    /// </summary>
+    public Plotter PlotMultiple(string[] expressions, double minX, double maxX, PlotConfig? config = null)
+    {
+        var plotter = new Plotter(config);
+        foreach (var expr in expressions)
+        {
+            plotter.AddFunction(expr, minX, maxX);
+        }
+        return plotter;
+    }
+    
+    /// <summary>
+    /// Create a new plotter instance
+    /// </summary>
+    public Plotter CreatePlotter(PlotConfig? config = null)
+    {
+        return new Plotter(config);
+    }
+    
+    #endregion
+    
+    #region Differential Equations
+    
+    /// <summary>
+    /// Solve ordinary differential equation dy/dx = f(x,y)
+    /// </summary>
+    public ODEResult SolveODE(string equation, double x0, double y0, double xEnd, ODEMethod method = ODEMethod.RungeKutta4, int steps = 1000)
+    {
+        var solver = new ODESolver();
+        return solver.Solve(equation, x0, y0, xEnd, method, steps);
+    }
+    
+    /// <summary>
+    /// Solve ODE and get value at specific point
+    /// </summary>
+    public double SolveODEAt(string equation, double x0, double y0, double xTarget, ODEMethod method = ODEMethod.RungeKutta4)
+    {
+        var solver = new ODESolver();
+        var result = solver.Solve(equation, x0, y0, xTarget, method);
+        return solver.InterpolateSolution(result, xTarget);
+    }
+    
+    /// <summary>
+    /// Solve system of ODEs
+    /// </summary>
+    public SystemODEResult SolveSystemODE(string[] equations, double t0, double[] y0, double tEnd, int steps = 1000)
+    {
+        var solver = new ODESolver();
+        return solver.SolveSystem(equations, t0, y0, tEnd, steps);
+    }
+    
+    #endregion
+    
+    #region Complex Number Support
+    
+    /// <summary>
+    /// Calculate expression with complex number support
+    /// </summary>
+    public ComplexNumber CalculateComplex(string expression, Dictionary<string, ComplexNumber>? variables = null)
+    {
+        var expr = Parse(expression);
+        
+        if (expr is ComplexExpression complexExpr)
+        {
+            return complexExpr.Value;
+        }
+        
+        // Try to evaluate as complex
+        return EvaluateAsComplex(expr, variables);
+    }
+    
+    private ComplexNumber EvaluateAsComplex(IExpression expr, Dictionary<string, ComplexNumber>? variables)
+    {
+        // For now, try regular evaluation and convert to complex
+        // This is a simplified version - full implementation would evaluate complex operations
+        try
+        {
+            var realVars = variables?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Real) ?? new Dictionary<string, double>();
+            var result = expr.Evaluate(MergeVariables(realVars));
+            return new ComplexNumber(result, 0);
+        }
+        catch
+        {
+            // If contains complex parts, handle specially
+            if (expr is ComplexExpression ce)
+                return ce.Value;
+                
+            throw new NotSupportedException($"Complex evaluation of {expr} not yet fully supported");
+        }
+    }
+    
+    #endregion
     
     private Dictionary<string, double> MergeVariables(Dictionary<string, double>? userVariables)
     {

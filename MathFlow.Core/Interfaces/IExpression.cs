@@ -1,5 +1,4 @@
 namespace MathFlow.Core.Interfaces;
-
 public interface IExpression
 {
     double Evaluate(Dictionary<string, double>? variables = null);

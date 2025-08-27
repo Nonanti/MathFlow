@@ -1,6 +1,4 @@
 namespace MathFlow.Core.Statistics;
-
-// Basic stats functions
 public static class StatisticalFunctions
 {
     /// <summary>

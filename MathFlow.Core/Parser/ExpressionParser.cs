@@ -1,9 +1,8 @@
 using System.Globalization;
 using MathFlow.Core.Expressions;
 using MathFlow.Core.Interfaces;
-
+using MathFlow.Core.ComplexMath;
 namespace MathFlow.Core.Parser;
-
 public class ExpressionParser
 {
     private List<Token> _tokens = new();
@@ -28,12 +27,12 @@ public class ExpressionParser
         return result;
     }
     
-    private Token CurrentToken => _tokens[_currentIndex];
+    private Token CurrentToken { get { return _tokens[_currentIndex]; } }
     
     private Token PeekToken(int offset = 1)
     {
-        var index = _currentIndex + offset;
-        return index < _tokens.Count ? _tokens[index] : _tokens[^1];
+        var idx = _currentIndex + offset;
+        return idx < _tokens.Count ? _tokens[idx] : _tokens[_tokens.Count - 1];
     }
     
     private void Advance()
@@ -99,7 +98,7 @@ public class ExpressionParser
         if (CurrentToken.Type == TokenType.Power)
         {
             Advance();
-            var right = ParsePower(); // Right associative
+            var right = ParsePower();
             return new BinaryExpression(left, BinaryOperator.Power, right);
         }
         
@@ -174,7 +173,6 @@ public class ExpressionParser
         
         if (CurrentToken.Type == TokenType.LeftParen)
         {
-            //hack: convert variable to function call
             _currentIndex--;
             _tokens[_currentIndex] = new Token(TokenType.Function, name, _tokens[_currentIndex].Position);
             return ParseFunction();
@@ -187,6 +185,11 @@ public class ExpressionParser
     {
         var constant = CurrentToken.Value.ToLower();
         Advance();
+        
+        if (constant == "i")
+        {
+            return new ComplexExpression(0, 1);
+        }
         
         var value = constant switch
         {
@@ -318,7 +321,7 @@ public class ExpressionParser
     
     private Expression ParseParenthesized()
     {
-        Advance(); // Skip '('
+        Advance();
         var expr = ParseExpression();
         
         if (CurrentToken.Type != TokenType.RightParen)
@@ -330,7 +333,6 @@ public class ExpressionParser
         return expr;
     }
 }
-
 public class ParserException : Exception
 {
     public ParserException(string message) : base(message) { }

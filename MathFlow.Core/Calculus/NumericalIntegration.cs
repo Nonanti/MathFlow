@@ -1,18 +1,15 @@
 using MathFlow.Core.Interfaces;
-
 namespace MathFlow.Core.Calculus;
-
 public static class NumericalIntegration
 {
     public static double Integrate(IExpression expression, string variable, double lowerBound, double upperBound, int steps = 10000)
     {
-        // default to Simpson's rule  
         return Simpson(expression, variable, lowerBound, upperBound, steps);
     }
     
     public static double Simpson(IExpression expression, string variable, double a, double b, int n)
     {
-        if (n % 2 != 0) n++; //must be even for simpson
+        if (n % 2 != 0) n++;
         
         var h = (b - a) / n;
         var variables = new Dictionary<string, double>();
