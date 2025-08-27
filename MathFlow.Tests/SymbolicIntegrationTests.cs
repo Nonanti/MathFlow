@@ -15,7 +15,7 @@ public class SymbolicIntegrationTests
     [InlineData("x^3", "x", "x^4 / 4")]
     [InlineData("x^(-2)", "x", "-(1 / x)")]  // negative power
     [InlineData("1/x", "x", "ln(x)")]  // special case x^(-1)
-    public void IntegrateSymbolic_BasicPowerRule_ReturnsCorrectAntiderivative(string expr, string var, string expected)
+    public void IntegrateSymbolic_BasicPowerRule_ReturnsCorrectAntiderivative(string expr, string var, string _)
     {
         var result = engine.IntegrateSymbolic(expr, var);
         var simplified = result.Simplify();
@@ -45,7 +45,7 @@ public class SymbolicIntegrationTests
     [InlineData("e^x", "x", "e^x")]
     [InlineData("sinh(x)", "x", "cosh(x)")]
     [InlineData("cosh(x)", "x", "sinh(x)")]
-    public void IntegrateSymbolic_TrigAndExp_ReturnsCorrectResult(string expr, string var, string expected)
+    public void IntegrateSymbolic_TrigAndExp_ReturnsCorrectResult(string expr, string var, string _)
     {
         var result = engine.IntegrateSymbolic(expr, var);
         
@@ -68,7 +68,7 @@ public class SymbolicIntegrationTests
     [InlineData("2*x + 3", "x", "x^2 + 3*x")]
     [InlineData("x^2 + x", "x", "x^3/3 + x^2/2")]
     [InlineData("sin(x) + cos(x)", "x", "-cos(x) + sin(x)")]
-    public void IntegrateSymbolic_LinearCombinations_ReturnsCorrectResult(string expr, string var, string expected)
+    public void IntegrateSymbolic_LinearCombinations_ReturnsCorrectResult(string expr, string var, string _)
     {
         var result = engine.IntegrateSymbolic(expr, var);
         
@@ -91,7 +91,7 @@ public class SymbolicIntegrationTests
     [InlineData("3*x^2", "x", "x^3")]  // constant multiple
     [InlineData("5*sin(x)", "x", "-5*cos(x)")]
     [InlineData("2*exp(x)", "x", "2*exp(x)")]
-    public void IntegrateSymbolic_ConstantMultiple_ReturnsCorrectResult(string expr, string var, string expected)
+    public void IntegrateSymbolic_ConstantMultiple_ReturnsCorrectResult(string expr, string var, string _)
     {
         var result = engine.IntegrateSymbolic(expr, var);
         

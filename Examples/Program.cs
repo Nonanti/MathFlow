@@ -19,10 +19,6 @@ class Program
                 case "plotting":
                     PlottingDemo.Run();
                     return;
-                case "ode":
-                case "odedemo":
-                    ODEDemo.Run();
-                    return;
                 case "integration":
                 case "test":
                     TestIntegration.RunTest();
