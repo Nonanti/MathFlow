@@ -36,7 +36,7 @@ public static class CombinatoricsFunctions
 			throw new ArgumentException("Factorial is only defined for non-negative integers");
 
 		if (n > 170)
-			return double.PositiveInfinity;
+			throw new OverflowException($"Factorial of {n} would overflow. Maximum supported value is 170.");
 
 		double result = 1;
 		for (int i = 2; i <= (int)n; i++)
@@ -53,7 +53,7 @@ public static class CombinatoricsFunctions
 		if (n < 0 || n != Math.Floor(n) || k < 0 || k != Math.Floor(k))
 			throw new ArgumentException("Binomial is only defined for non-negative integers");
 
-		if (n < 0 || k < 0 || k > n)
+		if (k > n)
 			return 0;
 
 		if (k > n - k)
@@ -64,6 +64,9 @@ public static class CombinatoricsFunctions
 		{
 			result *= n - (k - i);
 			result /= i;
+
+			if (double.IsInfinity(result))
+				throw new OverflowException($"Binomial coefficient C({n},{k}) would overflow.");
 		}
 
 		return result;
@@ -79,7 +82,12 @@ public static class CombinatoricsFunctions
 
 		double result = 1;
 		for (int i = 0; i < k; i++)
+		{
 			result *= n - i;
+
+			if (double.IsInfinity(result))
+				throw new OverflowException($"Permutation P({n},{k}) would overflow.");
+		}
 
 		return result;
 	}

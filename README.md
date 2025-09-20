@@ -22,7 +22,7 @@ dotnet add package MathFlow
 
 ### Package Reference
 ```xml
-<PackageReference Include="MathFlow" Version="2.0.0" />
+<PackageReference Include="MathFlow" Version="2.1.0" />
 ```
 
 ### Package Manager Console
@@ -46,11 +46,21 @@ var vars = new Dictionary<string, double> { ["x"] = 3, ["y"] = 4 };
 var answer = engine.Calculate("x^2 + y^2", vars); // 25
 ```
 
+## What's New in v2.1.0
+
+### New Features
+- **Combinatorics Functions**: Added binomial coefficients and permutation calculations
+- **Reorganized Math Functions**: GCD, LCM, and factorial moved to dedicated CombinatoricsFunctions class
+
+### Breaking Changes
+- `GCD`, `LCM`, and `Factorial` functions have been moved from their previous location to `CombinatoricsFunctions` class
+- Update your imports if you were using these functions directly
+
 ## What's New in v2.0.0
 
 ### Major Features Added
 - **Complex Number Support**: Full integration with expression parser
-- **Enhanced Polynomial Factoring**: Quadratic, cubic, and special forms  
+- **Enhanced Polynomial Factoring**: Quadratic, cubic, and special forms
 - **New ODE Solvers**: RungeKutta2 and Adams-Bashforth methods
 - **Rational Function Integration**: Partial fractions and special forms
 - **Symbolic Integration**: Extended support for trigonometric and exponential functions
