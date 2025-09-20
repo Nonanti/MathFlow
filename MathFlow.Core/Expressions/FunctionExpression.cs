@@ -62,7 +62,10 @@ public class FunctionExpression : Expression
 			"lcm" when argValues.Length == 2 => CombinatoricsFunctions.LCM((long)argValues[0], (long)argValues[1]),
 			"factorial" when argValues.Length == 1 => CombinatoricsFunctions.Factorial(argValues[0]),
 			"binomial" when argValues.Length == 2 => CombinatoricsFunctions.Binomial(argValues[0], argValues[1]),
+			"ncr" when argValues.Length == 2 => CombinatoricsFunctions.Binomial(argValues[0], argValues[1]),
+			"choose" when argValues.Length == 2 => CombinatoricsFunctions.Binomial(argValues[0], argValues[1]),
 			"perm" when argValues.Length == 2 => CombinatoricsFunctions.Permutation(argValues[0], argValues[1]),
+			"permutation" when argValues.Length == 2 => CombinatoricsFunctions.Permutation(argValues[0], argValues[1]),
 
 			// Default out
 			_ => throw new NotSupportedException($"Function '{Name}' is not supported")

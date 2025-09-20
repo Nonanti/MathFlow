@@ -59,13 +59,17 @@ public static class CombinatoricsFunctions
 		if (k > n - k)
 			k = n - k;
 
+		// Check for values that would definitely overflow
+		if (n > 1029 || (n > 170 && k > 85))
+			throw new OverflowException($"Binomial coefficient C({n},{k}) would overflow.");
+
 		double result = 1;
 		for (int i = 1; i <= k; i++)
 		{
 			result *= n - (k - i);
 			result /= i;
 
-			if (double.IsInfinity(result))
+			if (double.IsInfinity(result) || result > 1e308)
 				throw new OverflowException($"Binomial coefficient C({n},{k}) would overflow.");
 		}
 
@@ -80,12 +84,16 @@ public static class CombinatoricsFunctions
 		if (n < 0 || n != Math.Floor(n) || k < 0 || k != Math.Floor(k) || k > n)
 			throw new ArgumentException("Permutation is only defined for non-negative integers with k <= n");
 
+		// Check for values that would definitely overflow
+		if (n > 170 && k > 50)
+			throw new OverflowException($"Permutation P({n},{k}) would overflow.");
+
 		double result = 1;
 		for (int i = 0; i < k; i++)
 		{
 			result *= n - i;
 
-			if (double.IsInfinity(result))
+			if (double.IsInfinity(result) || result > 1e308)
 				throw new OverflowException($"Permutation P({n},{k}) would overflow.");
 		}
 
