@@ -5,7 +5,7 @@
 [![NuGet](https://img.shields.io/nuget/v/MathFlow.svg?style=flat-square)](https://www.nuget.org/packages/MathFlow/)
 [![License](https://img.shields.io/github/license/Nonanti/MathFlow?style=flat-square)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Nonanti/MathFlow/ci-cd.yml?branch=master&style=flat-square)](https://github.com/Nonanti/MathFlow/actions)
-[![.NET](https://img.shields.io/badge/.NET-8.0%2B-512BD4?style=flat-square)](https://dotnet.microsoft.com/download)
+[![.NET](https://img.shields.io/badge/.NET-9.0%2B-512BD4?style=flat-square)](https://dotnet.microsoft.com/download)
 
 **C# math expression library with symbolic computation support**
 
