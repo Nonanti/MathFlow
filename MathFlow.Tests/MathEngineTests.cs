@@ -107,6 +107,55 @@ public class MathEngineTests
 		Assert.Equal(expectedValue, actualValue, 10);
 	}
 
+	[Theory]
+	[InlineData("x^3", "x", 2, "6*x")]
+	[InlineData("x^4", "x", 2, "12*x^2")]
+	[InlineData("x^4", "x", 3, "24*x")]
+	[InlineData("x^5", "x", 4, "120*x")]
+	public void Differentiate_HigherOrder_ReturnsCorrectDerivative(string expression, string variable, int order, string expected)
+	{
+		var derivative = _engine.Differentiate(expression, variable, order);
+
+		var testPoint = new Dictionary<string, double> { [variable] = 2.0 };
+		var expectedExpr = _engine.Parse(expected);
+
+		var actualValue = derivative.Evaluate(testPoint);
+		var expectedValue = expectedExpr.Evaluate(testPoint);
+
+		Assert.Equal(expectedValue, actualValue, 10);
+	}
+
+	[Fact]
+	public void Differentiate_SecondDerivative_SinFunction()
+	{
+		var secondDerivative = _engine.Differentiate("sin(x)", "x", 2);
+		var testPoint = new Dictionary<string, double> { ["x"] = Math.PI / 4 };
+
+		var actual = secondDerivative.Evaluate(testPoint);
+		var expected = -Math.Sin(Math.PI / 4);
+
+		Assert.Equal(expected, actual, 10);
+	}
+
+	[Fact]
+	public void Differentiate_ThirdDerivative_CosFunction()
+	{
+		var thirdDerivative = _engine.Differentiate("cos(x)", "x", 3);
+		var testPoint = new Dictionary<string, double> { ["x"] = Math.PI / 6 };
+
+		var actual = thirdDerivative.Evaluate(testPoint);
+		var expected = Math.Sin(Math.PI / 6);
+
+		Assert.Equal(expected, actual, 10);
+	}
+
+	[Fact]
+	public void Differentiate_InvalidOrder_ThrowsException()
+	{
+		Assert.Throws<ArgumentException>(() => _engine.Differentiate("x^2", "x", 0));
+		Assert.Throws<ArgumentException>(() => _engine.Differentiate("x^2", "x", -1));
+	}
+
 	[Fact]
 	public void Integrate_SimpleFunction_ReturnsCorrectArea()
 	{

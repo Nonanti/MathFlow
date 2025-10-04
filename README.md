@@ -95,8 +95,16 @@ var answer = engine.Calculate("x^2 + y^2", vars); // 25
 ### Derivatives
 
 ```csharp
+// First derivative
 var derivative = engine.Differentiate("x^3 + 2*x^2 - 5*x + 3", "x");
 // gives you: 3*x^2 + 4*x - 5
+
+// Higher order derivatives
+var secondDerivative = engine.Differentiate("x^4", "x", order: 2);
+// gives you: 12*x^2
+
+var thirdDerivative = engine.Differentiate("sin(x)", "x", order: 2);
+// gives you: -sin(x)
 ```
 
 ### Simplification
@@ -211,7 +219,7 @@ Check the `Examples` folder for advanced usage:
 | `Calculate(expression, variables?)` | Evaluate expression |
 | `Parse(expression)` | Parse to AST |
 | `Simplify(expression)` | Simplify expression |
-| `Differentiate(expression, variable)` | Take derivative |
+| `Differentiate(expression, variable, order?)` | Take derivative (supports higher orders) |
 | `Integrate(expression, variable, a, b)` | Numerical integration |
 | `FindRoot(expression, guess)` | Find root using Newton's method |
 | `FindRoots(expression, start, end)` | Find all roots in range |
